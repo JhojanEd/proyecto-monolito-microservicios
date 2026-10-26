@@ -4,12 +4,16 @@ services:
     container_name: pedidos-app
     ports:
       - "3003:3003"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       DB_HOST: pedidos-db
       DB_PORT: 5432
       DB_NAME: pedidos_db
       DB_USER: pedidos_user
       DB_PASSWORD: pedidos123
+      USUARIOS_URL: http://host.docker.internal:3001/usuarios
+      PRODUCTOS_URL: http://host.docker.internal:3002/productos
     depends_on:
       pedidos-db:
         condition: service_healthy
