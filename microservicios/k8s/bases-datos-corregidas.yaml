@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usuarios-db
+  namespace: microservicios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usuarios-db
+  template:
+    metadata:
+      labels:
+        app: usuarios-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: usuarios_db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: usuarios-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: usuarios-password
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: datos
+        - mountPath: /docker-entrypoint-initdb.d/init.sql
+          name: init-script
+          subPath: init.sql
+      volumes:
+      - name: datos
+        persistentVolumeClaim:
+          claimName: usuarios-pgdata
+      - name: init-script
+        configMap:
+          name: usuarios-init
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productos-db
+  namespace: microservicios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productos-db
+  template:
+    metadata:
+      labels:
+        app: productos-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: productos_db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: productos-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: productos-password
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: datos
+        - mountPath: /docker-entrypoint-initdb.d/init.sql
+          name: init-script
+          subPath: init.sql
+      volumes:
+      - name: datos
+        persistentVolumeClaim:
+          claimName: productos-pgdata
+      - name: init-script
+        configMap:
+          name: productos-init
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pedidos-db
+  namespace: microservicios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pedidos-db
+  template:
+    metadata:
+      labels:
+        app: pedidos-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: pedidos_db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: pedidos-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: pedidos-password
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: datos
+        - mountPath: /docker-entrypoint-initdb.d/init.sql
+          name: init-script
+          subPath: init.sql
+      volumes:
+      - name: datos
+        persistentVolumeClaim:
+          claimName: pedidos-pgdata
+      - name: init-script
+        configMap:
+          name: pedidos-init
